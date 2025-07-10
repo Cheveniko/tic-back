@@ -4,6 +4,7 @@
 
 - Haber seguido la guía de instalación del FET-CL: https://www.notion.so/Instalaci-n-del-CLI-del-Software-FET-3d6bcf3e04ae4e0f8576bb0bfb906c2e?pvs=4
 - En su sistema operativo crear una carpeta `Documents` en $HOME en caso de que aún no exista. Luego cree la carpeta `spa` dentro de ese directorio.
+
 ```
 $HOME
      /Documents
@@ -53,7 +54,6 @@ MAIL_PORT=5042
 MAIL_USER=user@example.com
 MAIL_PASSWORD=password
 ```
-
 
 > 📖 **Nota:** Si se desea utilizar la funcionalidad de envío de mails del componente "Manejo de datos ingresados por el usuario y validación/aprobación de horarios generados” es necesario que cree una cuenta en Gmail, Outlook u otro y configure sus credenciales en “Mailing”. Actualmente está funcionalidad está desactivada pero puede ser comprendida en el [componente](https://bibdigital.epn.edu.ec/bitstream/15000/23393/1/CD%2012813.pdf) de la integrante [Diana López](https://bibdigital.epn.edu.ec/bitstream/15000/23393/1/CD%2012813.pdf).
 

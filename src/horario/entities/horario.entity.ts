@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity('horario')
-export class HorarioEntity {
+export class HorarioEstupidoEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -24,4 +24,34 @@ export class HorarioEntity {
   @ManyToOne(() => UsuarioEntity, (usuario) => usuario.horarios)
   @JoinColumn({ name: 'idUsuario' })
   usuario: UsuarioEntity;
+}
+
+@Entity('horarios')
+export class HorarioEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  profesor: string;
+
+  @Column({ type: 'varchar', length: 100 })
+  aula: string;
+
+  @Column({ type: 'varchar', length: 50 })
+  grupo: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  materia: string;
+
+  @Column({ type: 'varchar', length: 20 })
+  dia: string;
+
+  @Column({ type: 'time' })
+  hora_inicio: string;
+
+  @Column({ type: 'time' })
+  hora_fin: string;
+
+  @Column({ type: 'varchar', length: 20 })
+  semestre: string;
 }

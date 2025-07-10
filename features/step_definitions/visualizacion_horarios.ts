@@ -2,7 +2,7 @@ const assert = require('assert');
 import { Given, When, Then, After } from '@cucumber/cucumber';
 import { getRepository } from 'typeorm';
 import { HorarioController } from '../../src/horario/controllers/horario.controller';
-import { HorarioEntity } from '../../src/horario/entities/horario.entity';
+import { HorarioEstupidoEntity } from '../../src/horario/entities/horario.entity';
 import * as fs from 'fs';
 
 const path = require('path');
@@ -43,7 +43,7 @@ Given(
       descripcion: 'Horario generado con los datos de software ',
     };
 
-    this.horarioGenerado = await getRepository(HorarioEntity).save(
+    this.horarioGenerado = await getRepository(HorarioEstupidoEntity).save(
       this.horarioGenerado,
     );
   },
@@ -93,7 +93,7 @@ Then(
 
 After('@VisualizacionFiltroDocente', async function () {
   //Eliminar datos usados
-  await getRepository(HorarioEntity).delete(this.horarioGenerado);
+  await getRepository(HorarioEstupidoEntity).delete(this.horarioGenerado);
 });
 
 /* ESCENARIO 2 - Visualización de horarios usando filtro por carrera */
@@ -149,5 +149,5 @@ Then(
 
 After('@VisualizacionFiltroCarrera', async function () {
   //Eliminar datos usados
-  await getRepository(HorarioEntity).delete(this.horarioGenerado);
+  await getRepository(HorarioEstupidoEntity).delete(this.horarioGenerado);
 });

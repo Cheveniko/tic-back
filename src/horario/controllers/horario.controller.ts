@@ -33,7 +33,11 @@ export class HorarioController {
         .descripcion,
   })
   @Post(configuraciones.controladores.horario.operaciones.crearHorario.ruta)
-  @Roles(RolesEnum.COORDINADOR, RolesEnum.ASISTENTE_ACADEMICO, RolesEnum.SUBDECANO)
+  @Roles(
+    RolesEnum.COORDINADOR,
+    RolesEnum.ASISTENTE_ACADEMICO,
+    RolesEnum.SUBDECANO,
+  )
   async crearHorario(@Body() horario: HorarioDto) {
     await this.horarioService.crearHorario(horario);
   }
@@ -42,71 +46,78 @@ export class HorarioController {
   /* ======================================= OBTENER HORARIO DOCENTE ===================================== */
   /* ===================================================================================================== */
 
-  @Public()
-  @ApiOperation({
-    summary:
-      configuraciones.controladores.horario.operaciones.obtenerHorarioDocente
-        .descripcion,
-  })
-  @Get(
-    configuraciones.controladores.horario.operaciones.obtenerHorarioDocente
-      .ruta,
-  )
-  @Roles(RolesEnum.COORDINADOR, RolesEnum.ASISTENTE_ACADEMICO, RolesEnum.SUBDECANO)
-  obtenerHorarioDocente(
-    @Param('nombreDocente') nombreDocente: string,
-    @Param('idHorario') idHorario: string,
-  ) {
-    // Formatear y convertir en mayúsculas
-    nombreDocente = nombreDocente.toUpperCase();
-    return this.horarioService.obtenerHorarioDocente(nombreDocente, idHorario);
-  }
+  // @Public()
+  // @ApiOperation({
+  //   summary:
+  //     configuraciones.controladores.horario.operaciones.obtenerHorarioDocente
+  //       .descripcion,
+  // })
+  // @Get(
+  //   configuraciones.controladores.horario.operaciones.obtenerHorarioDocente
+  //     .ruta,
+  // )
+  // @Roles(
+  //   RolesEnum.COORDINADOR,
+  //   RolesEnum.ASISTENTE_ACADEMICO,
+  //   RolesEnum.SUBDECANO,
+  // )
+  // obtenerHorarioDocente(
+  //   @Param('nombreDocente') nombreDocente: string,
+  //   @Param('idHorario') idHorario: string,
+  // ) {
+  //   // Formatear y convertir en mayúsculas
+  //   nombreDocente = nombreDocente.toUpperCase();
+  //   return this.horarioService.obtenerHorarioDocente(nombreDocente, idHorario);
+  // }
 
   /* ===================================================================================================== */
   /* ======================================= OBTENER HORARIO GRUPO ======================================= */
   /* ===================================================================================================== */
 
-  @ApiOperation({
-    summary:
-      configuraciones.controladores.horario.operaciones.obtenerHorarioGrupo
-        .descripcion,
-  })
-  @Get(
-    configuraciones.controladores.horario.operaciones.obtenerHorarioGrupo.ruta,
-  )
-  @Roles(RolesEnum.COORDINADOR, RolesEnum.ASISTENTE_ACADEMICO,  RolesEnum.SUBDECANO)
-  async obtenerHorarioGrupo(
-    @Param('grupo') grupo: string,
-    @Param('idHorario') idHorario: string,
-  ) {
-    // Formatear y convertir en mayúsculas
-    grupo = grupo.toUpperCase();
-    return await this.horarioService.obtenerHorarioGrupo(grupo, idHorario);
-  }
+  // @ApiOperation({
+  //   summary:
+  //     configuraciones.controladores.horario.operaciones.obtenerHorarioGrupo
+  //       .descripcion,
+  // })
+  // @Get(
+  //   configuraciones.controladores.horario.operaciones.obtenerHorarioGrupo.ruta,
+  // )
+  // @Roles(
+  //   RolesEnum.COORDINADOR,
+  //   RolesEnum.ASISTENTE_ACADEMICO,
+  //   RolesEnum.SUBDECANO,
+  // )
+  // async obtenerHorarioGrupo(
+  //   @Param('grupo') grupo: string,
+  //   @Param('idHorario') idHorario: string,
+  // ) {
+  //   // Formatear y convertir en mayúsculas
+  //   grupo = grupo.toUpperCase();
+  //   return await this.horarioService.obtenerHorarioGrupo(grupo, idHorario);
+  // }
 
   /* ===================================================================================================== */
   /* ======================================= OBTENER HORARIO AULA ===================================== */
   /* ===================================================================================================== */
 
-  @Public()
-  @ApiOperation({
-    summary:
-      configuraciones.controladores.horario.operaciones.obtenerHorarioAula
-        .descripcion,
-  })
-  @Get(
-    configuraciones.controladores.horario.operaciones.obtenerHorarioAula
-      .ruta,
-  )
-  @Roles(RolesEnum.COORDINADOR, RolesEnum.SUBDECANO)
-  obtenerHorarioAula(
-    @Param('nombreAula') nombreAula: string,
-    @Param('idHorario') idHorario: string,
-  ) {
-    // Formatear y convertir en mayúsculas
-    nombreAula = nombreAula.toUpperCase();
-    return this.horarioService.obtenerHorarioAula(nombreAula, idHorario);
-  }
+  // @Public()
+  // @ApiOperation({
+  //   summary:
+  //     configuraciones.controladores.horario.operaciones.obtenerHorarioAula
+  //       .descripcion,
+  // })
+  // @Get(
+  //   configuraciones.controladores.horario.operaciones.obtenerHorarioAula.ruta,
+  // )
+  // @Roles(RolesEnum.COORDINADOR, RolesEnum.SUBDECANO)
+  // obtenerHorarioAula(
+  //   @Param('nombreAula') nombreAula: string,
+  //   @Param('idHorario') idHorario: string,
+  // ) {
+  //   // Formatear y convertir en mayúsculas
+  //   nombreAula = nombreAula.toUpperCase();
+  //   return this.horarioService.obtenerHorarioAula(nombreAula, idHorario);
+  // }
 
   /* ========================================================================================================= */
   /* ======================================= OBTENER TODOS LOS HORARIOS  ===================================== */
@@ -119,7 +130,11 @@ export class HorarioController {
         .descripcion,
   })
   @Get(configuraciones.controladores.horario.operaciones.obtenerHorarios.ruta)
-  @Roles(RolesEnum.COORDINADOR, RolesEnum.ASISTENTE_ACADEMICO, RolesEnum.SUBDECANO)
+  @Roles(
+    RolesEnum.COORDINADOR,
+    RolesEnum.ASISTENTE_ACADEMICO,
+    RolesEnum.SUBDECANO,
+  )
   obtenerHorarios() {
     return this.horarioService.obtenerHorarios();
   }
@@ -136,7 +151,11 @@ export class HorarioController {
   @Get(
     configuraciones.controladores.horario.operaciones.obtenerHorarioPorID.ruta,
   )
-  @Roles(RolesEnum.COORDINADOR, RolesEnum.ASISTENTE_ACADEMICO, RolesEnum.SUBDECANO)
+  @Roles(
+    RolesEnum.COORDINADOR,
+    RolesEnum.ASISTENTE_ACADEMICO,
+    RolesEnum.SUBDECANO,
+  )
   obtenerHorarioPorID(@Param('id') idHorario: string) {
     if (idHorario && !isUUID(idHorario)) {
       throw new HttpException('ID de horario inválido', HttpStatus.BAD_REQUEST);

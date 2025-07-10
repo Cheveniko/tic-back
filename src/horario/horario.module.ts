@@ -9,13 +9,18 @@ import { NivelesModule } from '../../src/niveles/niveles.module';
 import { ParametrosInicialesModule } from '../../src/parametros-iniciales/parametros-iniciales.module';
 import { UsuarioEntity } from '../../src/usuarios/entities/usuario.entity';
 import { UsuarioService } from '../../src/usuarios/services/usuario.service';
-import { HorarioController } from './controllers/horario.controller';
 import { HorarioEntity } from './entities/horario.entity';
+import { HorarioController } from './controllers/horario.controller';
+import { HorarioEstupidoEntity } from './entities/horario.entity';
 import { HorarioService } from './services/horario.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([HorarioEntity, UsuarioEntity]),
+    TypeOrmModule.forFeature([
+      HorarioEstupidoEntity,
+      HorarioEntity,
+      UsuarioEntity,
+    ]),
     ParametrosInicialesModule,
     AsignaturaModule,
     DocenteModule,

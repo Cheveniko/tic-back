@@ -246,8 +246,7 @@ const configuracionesAPI = {
         },
         obtenerHorarioAula: {
           ruta: '/obtenerHorarioAula/:nombreAula/:idHorario',
-          descripcion:
-            'Método para obtener el horario de un aula específica.',
+          descripcion: 'Método para obtener el horario de un aula específica.',
         },
         obtenerHorarios: {
           ruta: '/obtenerHorarios',

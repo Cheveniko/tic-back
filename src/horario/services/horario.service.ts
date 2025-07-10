@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UsuarioService } from '../../../src/usuarios/services/usuario.service';
 import { Repository } from 'typeorm';
 import { HorarioDto } from '../dto/horario.dto';
-import { HorarioEntity } from '../entities/horario.entity';
+import {
+  HorarioEntity,
+  HorarioEstupidoEntity,
+} from '../entities/horario.entity';
 import { XMLBuilder } from 'fast-xml-parser';
 import {
   nombreFacultad,
@@ -26,6 +29,8 @@ import { xml2js } from 'xml-js';
 @Injectable()
 export class HorarioService {
   constructor(
+    @InjectRepository(HorarioEstupidoEntity)
+    private repositorioHorarioEstupido: Repository<HorarioEstupidoEntity>,
     @InjectRepository(HorarioEntity)
     private repositorioHorario: Repository<HorarioEntity>,
     private usuarioService: UsuarioService,
@@ -45,7 +50,7 @@ export class HorarioService {
       horario.idUsuario,
     );
     if (usuario) {
-      const horarioNuevo = this.repositorioHorario.create(horario);
+      const horarioNuevo = this.repositorioHorarioEstupido.create(horario);
       horarioNuevo.usuario = usuario;
     }
   }
@@ -56,10 +61,7 @@ export class HorarioService {
 
   obtenerHorarios(): Promise<HorarioEntity[]> {
     Logger.log('obtenerHorarios', 'HORARIOS');
-    return this.repositorioHorario.find({
-      relations: ['usuario'],
-      select: ['id', 'fechaCreacion', 'descripcion', 'usuario'],
-    });
+    return this.repositorioHorario.find();
   }
 
   /* ================================================================================================= */
@@ -70,7 +72,6 @@ export class HorarioService {
     Logger.log('obtenerHorarioPorId', 'HORARIO');
     return this.repositorioHorario.findOne({
       where: { id: idHorario },
-      select: ['id', 'horarioJson'],
     });
   }
 
@@ -78,186 +79,185 @@ export class HorarioService {
   /* ======================================= OBTENER HORARIO DOCENTE ===================================== */
   /* ===================================================================================================== */
 
-  async obtenerHorarioDocente(nombreDocente: string, idHorario: string) {
-    Logger.log('obtenerHorarioDocente');
-    //Buscar horario
-    const horario = await this.obtenerHorarioPorID(idHorario);
-
-    // Arreglo de respuesta
-    const horarioFiltrado = [];
-    let index = 0;
-
-    // Transformador de texto a JSON
-    const arreglo = JSON.parse(horario.horarioJson.toString());
-    const subgrupos = arreglo.Students_Timetable.Subgroup;
-
-    // Revisión por cada grupo
-    for (let i = 0; i < subgrupos.length; i++) {
-      const dias = subgrupos[i].Day;
-      // Revisión por cada día
-      for (let j = 0; j < dias.length; j++) {
-        const horas = dias[j].Hour;
-        // Revisión por cada hora
-        for (let k = 0; k < horas.length; k++) {
-          // Comprueba que exista horario en la hora iterada
-          if (horas[k].Teacher) {
-            console.log('horas[k].Teacher', horas[k].Teacher);
-            // Si el profesor se llama igual al enviado
-            if (horas[k].Teacher['-name'].toUpperCase() === nombreDocente) {
-              // Si se vinculó un espacio físico se añade este
-              if (horas[k].Room) {
-                horarioFiltrado[index] = {
-                  asignatura: horas[k].Subject['-name'].toUpperCase(),
-                  aula: horas[k].Room['-name'].toUpperCase(),
-                  grupo: subgrupos[i]['-name'].toUpperCase(),
-                  tipoAula: horas[k].Activity_Tag['-name'],
-                  dia: dias[j]['-name'].toUpperCase(),
-                  horario: horas[k]['-name'].replace(/ /g, ''),
-                };
-                index++;
-              } else {
-                horarioFiltrado[index] = {
-                  asignatura: horas[k].Subject['-name'].toUpperCase(),
-                  aula: horas[k].Room['-name'].toUpperCase(),
-                  grupo: subgrupos[i]['-name'].toUpperCase(),
-                  tipoAula: horas[k].Activity_Tag['-name'],
-                  dia: dias[j]['-name'].toUpperCase(),
-                  horario: horas[k]['-name'].replace(/ /g, ''),
-                };
-                index++;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    return horarioFiltrado;
-  }
+  // async obtenerHorarioDocente(nombreDocente: string, idHorario: string) {
+  //   Logger.log('obtenerHorarioDocente');
+  //   //Buscar horario
+  //   const horario = await this.obtenerHorarioPorID(idHorario);
+  //
+  //   // Arreglo de respuesta
+  //   const horarioFiltrado = [];
+  //   let index = 0;
+  //
+  //   // Transformador de texto a JSON
+  //   const arreglo = JSON.parse(horario.horarioJson.toString());
+  //   const subgrupos = arreglo.Students_Timetable.Subgroup;
+  //
+  //   // Revisión por cada grupo
+  //   for (let i = 0; i < subgrupos.length; i++) {
+  //     const dias = subgrupos[i].Day;
+  //     // Revisión por cada día
+  //     for (let j = 0; j < dias.length; j++) {
+  //       const horas = dias[j].Hour;
+  //       // Revisión por cada hora
+  //       for (let k = 0; k < horas.length; k++) {
+  //         // Comprueba que exista horario en la hora iterada
+  //         if (horas[k].Teacher) {
+  //           console.log('horas[k].Teacher', horas[k].Teacher);
+  //           // Si el profesor se llama igual al enviado
+  //           if (horas[k].Teacher['-name'].toUpperCase() === nombreDocente) {
+  //             // Si se vinculó un espacio físico se añade este
+  //             if (horas[k].Room) {
+  //               horarioFiltrado[index] = {
+  //                 asignatura: horas[k].Subject['-name'].toUpperCase(),
+  //                 aula: horas[k].Room['-name'].toUpperCase(),
+  //                 grupo: subgrupos[i]['-name'].toUpperCase(),
+  //                 tipoAula: horas[k].Activity_Tag['-name'],
+  //                 dia: dias[j]['-name'].toUpperCase(),
+  //                 horario: horas[k]['-name'].replace(/ /g, ''),
+  //               };
+  //               index++;
+  //             } else {
+  //               horarioFiltrado[index] = {
+  //                 asignatura: horas[k].Subject['-name'].toUpperCase(),
+  //                 aula: horas[k].Room['-name'].toUpperCase(),
+  //                 grupo: subgrupos[i]['-name'].toUpperCase(),
+  //                 tipoAula: horas[k].Activity_Tag['-name'],
+  //                 dia: dias[j]['-name'].toUpperCase(),
+  //                 horario: horas[k]['-name'].replace(/ /g, ''),
+  //               };
+  //               index++;
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   return horarioFiltrado;
+  // }
 
   /* ===================================================================================================== */
   /* ======================================= OBTENER HORARIO GRUPO ======================================= */
   /* ===================================================================================================== */
 
-  async obtenerHorarioGrupo(grupo: string, idHorario: string) {
-    Logger.log('obtenerHorarioGrupo');
-    //Buscar horario
-    const horario = await this.repositorioHorario.findOne({
-      where: {
-        id: idHorario,
-      },
-    });
-
-    // Arreglo de respuesta
-    const horarioFiltrado = [];
-    let index = 0;
-
-    // Transformador de texto a JSON
-    const arreglo = JSON.parse(horario.horarioJson.toString());
-    const subgrupos = arreglo.Students_Timetable.Subgroup;
-
-    // Revisión por cada grupo
-    for (let i = 0; i < subgrupos.length; i++) {
-      if (subgrupos[i]['-name'].split(' ', 1) == grupo) {
-        const dias = subgrupos[i].Day;
-        // Revisión por cada día
-        for (let j = 0; j < dias.length; j++) {
-          // Revisión por cada hora
-          const horas = dias[j].Hour;
-          for (let k = 0; k < horas.length; k++) {
-            // Comprueba que exista horario en la hora iterada
-            if (horas[k].Teacher) {
-              // Si se vinculó un espacio físico se añade este
-              if (horas[k].Room) {
-                horarioFiltrado[index] = {
-                  docente: horas[k].Teacher['-name'].toUpperCase(),
-                  asignatura: horas[k].Subject['-name'].toUpperCase(),
-                  tipoAula: horas[k].Activity_Tag['-name'],
-                  dia: dias[j]['-name'].toUpperCase(),
-                  horario: horas[k]['-name'].replace(/ /g, ''),
-                  aula: horas[k].Room['-name'].toUpperCase(),
-                };
-                index++;
-              } else {
-                horarioFiltrado[index] = {
-                  docente: horas[k].Teacher['-name'].toUpperCase(),
-                  asignatura: horas[k].Subject['-name'].toUpperCase(),
-                  aula: horas[k].Room['-name'].toUpperCase(),
-                  tipoAula: horas[k].Activity_Tag['-name'],
-                  dia: dias[j]['-name'].toUpperCase(),
-                  horario: horas[k]['-name'].replace(/ /g, ''),
-                };
-                index++;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    return horarioFiltrado;
-  }
+  // async obtenerHorarioGrupo(grupo: string, idHorario: string) {
+  //   Logger.log('obtenerHorarioGrupo');
+  //   //Buscar horario
+  //   const horario = await this.repositorioHorarioEstupido.findOne({
+  //     where: {
+  //       id: idHorario,
+  //     },
+  //   });
+  //
+  //   // Arreglo de respuesta
+  //   const horarioFiltrado = [];
+  //   let index = 0;
+  //
+  //   // Transformador de texto a JSON
+  //   const arreglo = JSON.parse(horario.horarioJson.toString());
+  //   const subgrupos = arreglo.Students_Timetable.Subgroup;
+  //
+  //   // Revisión por cada grupo
+  //   for (let i = 0; i < subgrupos.length; i++) {
+  //     if (subgrupos[i]['-name'].split(' ', 1) == grupo) {
+  //       const dias = subgrupos[i].Day;
+  //       // Revisión por cada día
+  //       for (let j = 0; j < dias.length; j++) {
+  //         // Revisión por cada hora
+  //         const horas = dias[j].Hour;
+  //         for (let k = 0; k < horas.length; k++) {
+  //           // Comprueba que exista horario en la hora iterada
+  //           if (horas[k].Teacher) {
+  //             // Si se vinculó un espacio físico se añade este
+  //             if (horas[k].Room) {
+  //               horarioFiltrado[index] = {
+  //                 docente: horas[k].Teacher['-name'].toUpperCase(),
+  //                 asignatura: horas[k].Subject['-name'].toUpperCase(),
+  //                 tipoAula: horas[k].Activity_Tag['-name'],
+  //                 dia: dias[j]['-name'].toUpperCase(),
+  //                 horario: horas[k]['-name'].replace(/ /g, ''),
+  //                 aula: horas[k].Room['-name'].toUpperCase(),
+  //               };
+  //               index++;
+  //             } else {
+  //               horarioFiltrado[index] = {
+  //                 docente: horas[k].Teacher['-name'].toUpperCase(),
+  //                 asignatura: horas[k].Subject['-name'].toUpperCase(),
+  //                 aula: horas[k].Room['-name'].toUpperCase(),
+  //                 tipoAula: horas[k].Activity_Tag['-name'],
+  //                 dia: dias[j]['-name'].toUpperCase(),
+  //                 horario: horas[k]['-name'].replace(/ /g, ''),
+  //               };
+  //               index++;
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   return horarioFiltrado;
+  // }
 
   /* ===================================================================================================== */
   /* ======================================= OBTENER HORARIO AULA ===================================== */
   /* ===================================================================================================== */
 
-  async obtenerHorarioAula(nombreAula: string, idHorario: string) {
-    Logger.log('obtenerHorarioAula');
-    //Buscar horario
-    const horario = await this.obtenerHorarioPorID(idHorario);
-    // Arreglo de respuesta
-    const horarioFiltrado = [];
-    let index = 0;
-    // Transformador de texto a JSON
-    const arreglo = JSON.parse(horario.horarioJson.toString());
-    const subgrupos = arreglo.Students_Timetable.Subgroup;
-
-    // Revisión por cada grupo
-    for (let i = 0; i < subgrupos.length; i++) {
-      const dias = subgrupos[i].Day;
-      // Revisión por cada día
-      for (let j = 0; j < dias.length; j++) {
-        const horas = dias[j].Hour;
-        // Revisión por cada hora
-        for (let k = 0; k < horas.length; k++) {
-          // Comprueba que exista horario en la hora iterada
-          if (horas[k].Room) {
-            // Si el aula se llama igual al enviado
-            if (horas[k].Room['-name'].toUpperCase() === nombreAula) {
-              // Si se vinculó un espacio físico se añade este
-              if (horas[k].Room) {
-                horarioFiltrado[index] = {
-                  docente: horas[k].Teacher['-name'].toUpperCase(),
-                  asignatura: horas[k].Subject['-name'].toUpperCase(),
-                  grupo: subgrupos[i]['-name'].toUpperCase(),
-                  tipoAula: horas[k].Activity_Tag['-name'],
-                  dia: dias[j]['-name'].toUpperCase(),
-                  horario: horas[k]['-name'].replace(/ /g, ''),
-                };
-                index++;
-              } else {
-                horarioFiltrado[index] = {
-                  docente: horas[k].Teacher['-name'].toUpperCase(),
-                  asignatura: horas[k].Subject['-name'].toUpperCase(),
-                  grupo: subgrupos[i]['-name'].toUpperCase(),
-                  tipoAula: horas[k].Activity_Tag['-name'],
-                  dia: dias[j]['-name'].toUpperCase(),
-                  horario: horas[k]['-name'].replace(/ /g, ''),
-                };
-                index++;
-              }
-            }
-          }
-        }
-      }
-    }
-
-
-    console.log("horarioFiltrado -->",horarioFiltrado)
-
-    return horarioFiltrado;
-  }
+  // async obtenerHorarioAula(nombreAula: string, idHorario: string) {
+  //   Logger.log('obtenerHorarioAula');
+  //   //Buscar horario
+  //   const horario = await this.obtenerHorarioPorID(idHorario);
+  //   // Arreglo de respuesta
+  //   const horarioFiltrado = [];
+  //   let index = 0;
+  //   // Transformador de texto a JSON
+  //   const arreglo = JSON.parse(horario.horarioJson.toString());
+  //   const subgrupos = arreglo.Students_Timetable.Subgroup;
+  //
+  //   // Revisión por cada grupo
+  //   for (let i = 0; i < subgrupos.length; i++) {
+  //     const dias = subgrupos[i].Day;
+  //     // Revisión por cada día
+  //     for (let j = 0; j < dias.length; j++) {
+  //       const horas = dias[j].Hour;
+  //       // Revisión por cada hora
+  //       for (let k = 0; k < horas.length; k++) {
+  //         // Comprueba que exista horario en la hora iterada
+  //         if (horas[k].Room) {
+  //           // Si el aula se llama igual al enviado
+  //           if (horas[k].Room['-name'].toUpperCase() === nombreAula) {
+  //             // Si se vinculó un espacio físico se añade este
+  //             if (horas[k].Room) {
+  //               horarioFiltrado[index] = {
+  //                 docente: horas[k].Teacher['-name'].toUpperCase(),
+  //                 asignatura: horas[k].Subject['-name'].toUpperCase(),
+  //                 grupo: subgrupos[i]['-name'].toUpperCase(),
+  //                 tipoAula: horas[k].Activity_Tag['-name'],
+  //                 dia: dias[j]['-name'].toUpperCase(),
+  //                 horario: horas[k]['-name'].replace(/ /g, ''),
+  //               };
+  //               index++;
+  //             } else {
+  //               horarioFiltrado[index] = {
+  //                 docente: horas[k].Teacher['-name'].toUpperCase(),
+  //                 asignatura: horas[k].Subject['-name'].toUpperCase(),
+  //                 grupo: subgrupos[i]['-name'].toUpperCase(),
+  //                 tipoAula: horas[k].Activity_Tag['-name'],
+  //                 dia: dias[j]['-name'].toUpperCase(),
+  //                 horario: horas[k]['-name'].replace(/ /g, ''),
+  //               };
+  //               index++;
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   console.log('horarioFiltrado -->', horarioFiltrado);
+  //
+  //   return horarioFiltrado;
+  // }
 
   async Format() {
     const obj = {};
@@ -660,7 +660,7 @@ ${builderRestriccionesEspacio.build(restriccionesEspacio)}
 
                 const jsonDataFormat = JSON.stringify(format);
 
-                this.repositorioHorario.save({
+                this.repositorioHorarioEstupido.save({
                   descripcion: 'Horario por subgrupos',
                   fechaCreacion: new Date(),
                   horarioJson: jsonDataFormat,
@@ -813,7 +813,7 @@ ${builderRestriccionesEspacio.build(restriccionesEspacio)}
 
                 const jsonDataFormat = JSON.stringify(format);
 
-                await this.repositorioHorario.save({
+                await this.repositorioHorarioEstupido.save({
                   descripcion: 'Horario por subgrupos',
                   fechaCreacion: new Date(),
                   horarioJson: jsonDataFormat,
