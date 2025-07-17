@@ -75,6 +75,13 @@ export class HorarioService {
     });
   }
 
+  async obtenerHorarioPorSemestre(semestre: string): Promise<HorarioEntity[]> {
+    Logger.log('obtenerHorarioPorSemestre', 'HORARIO');
+    return this.repositorioHorario.find({
+      where: { semestre },
+    });
+  }
+
   /* ===================================================================================================== */
   /* ======================================= OBTENER HORARIO DOCENTE ===================================== */
   /* ===================================================================================================== */

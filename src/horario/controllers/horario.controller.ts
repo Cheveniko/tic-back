@@ -42,6 +42,17 @@ export class HorarioController {
     await this.horarioService.crearHorario(horario);
   }
 
+  @ApiOperation({ description: '' })
+  @Get('/semestre/:semestre')
+  @Roles(
+    RolesEnum.COORDINADOR,
+    RolesEnum.ASISTENTE_ACADEMICO,
+    RolesEnum.SUBDECANO,
+  )
+  async obtenerHorarioPorSemestre(@Param('semestre') semestre: string) {
+    return await this.horarioService.obtenerHorarioPorSemestre(semestre);
+  }
+
   /* ===================================================================================================== */
   /* ======================================= OBTENER HORARIO DOCENTE ===================================== */
   /* ===================================================================================================== */
